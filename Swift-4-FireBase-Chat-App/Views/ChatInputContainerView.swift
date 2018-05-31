@@ -14,7 +14,7 @@ class ChatInputContainerView: UIView, UITextFieldDelegate {
         didSet {
             sendButton.addTarget(chatLogController, action: #selector(ChatLogController.handleSend), for: .touchUpInside)
             uploadImageView.addGestureRecognizer(UITapGestureRecognizer(target: chatLogController, action: #selector(ChatLogController.handleUploadImageTap)))
-            recordImageView.addGestureRecognizer(UITapGestureRecognizer(target: chatLogController, action: #selector(ChatLogController.handleRecordVoice)))
+            recordImageView.addGestureRecognizer(UILongPressGestureRecognizer(target: chatLogController, action: #selector(ChatLogController.handleRecordVoice(_:))))
         }
     }
     
@@ -35,18 +35,21 @@ class ChatInputContainerView: UIView, UITextFieldDelegate {
     let uploadImageView: UIImageView = {
         var iView = UIImageView(image: UIImage(named: "upload_image_icon"))
         iView.translatesAutoresizingMaskIntoConstraints = false
+        iView.contentMode = .scaleAspectFit
         //  iView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleUploadImageTap)))
         iView.isUserInteractionEnabled = true
         return iView
     }()
     
     let recordImageView: UIImageView = {
-        var iView = UIImageView(image: UIImage(named: "microphone"))
+        var iView = UIImageView(image: UIImage(named: "mic"))
         iView.translatesAutoresizingMaskIntoConstraints = false
+        iView.contentMode = .scaleAspectFit
         //  iView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleUploadImageTap)))
         iView.isUserInteractionEnabled = true
         return iView
     }()
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -58,17 +61,17 @@ class ChatInputContainerView: UIView, UITextFieldDelegate {
         [
             uploadImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             uploadImageView.leftAnchor.constraint(equalTo: leftAnchor,constant: 8),
-            uploadImageView.widthAnchor.constraint(equalToConstant: 44),
-            uploadImageView.heightAnchor.constraint(equalToConstant: 44)
+            uploadImageView.widthAnchor.constraint(equalToConstant: 30),
+            uploadImageView.heightAnchor.constraint(equalToConstant: 30)
             ].forEach {$0.isActive=true}
         
         self.addSubview(recordImageView)
         [
             recordImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             recordImageView.leftAnchor.constraint(equalTo: uploadImageView.rightAnchor,constant: 8),
-            recordImageView.widthAnchor.constraint(equalToConstant: 44),
-            recordImageView.heightAnchor.constraint(equalToConstant: 44)
-            ].forEach {$0.isActive=true}
+            recordImageView.widthAnchor.constraint(equalToConstant: 30),
+            recordImageView.heightAnchor.constraint(equalToConstant: 30)
+        ].forEach {$0.isActive=true}
         
         
         

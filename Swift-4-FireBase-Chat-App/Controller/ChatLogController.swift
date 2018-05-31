@@ -127,34 +127,40 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate, UICol
     var audioRecorder: AVAudioRecorder!
     var recordButton: UIButton!
     
-    @objc func handleRecordVoice() {
-        recordingSession = AVAudioSession.sharedInstance()
+    @objc func handleRecordVoice(_ sender: UIGestureRecognizer) {
         
-        do {
-            try recordingSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
-            try recordingSession.setActive(true)
-            recordingSession.requestRecordPermission() { [unowned self] allowed in
-                DispatchQueue.main.async {
-                    if allowed {
-                        self.recordTapped()
-                    } else {
-                        // failed to record!
-                    }
-                }
-            }
-        } catch {
-            // failed to record!
-        }
-        
-    }
-    @objc func recordTapped() {
-        if audioRecorder == nil {
-            startRecording()
-        } else {
+        print("Long tap")
+        if sender.state == .ended {
+            print("UIGestureRecognizerStateEnded")
+            //Do Whatever You want on End of Gesture
             finishRecording(success: true, url: audioRecorder.url )
         }
+        else if sender.state == .began {
+            print("UIGestureRecognizerStateBegan.")
+            //Do Whatever You want on Began of Gesture
+            recordingSession = AVAudioSession.sharedInstance()
+            
+            do {
+                try recordingSession.setCategory(AVAudioSessionCategoryPlayAndRecord, with: AVAudioSessionCategoryOptions.defaultToSpeaker)
+              //  try recordingSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+                try recordingSession.setActive(true)
+                recordingSession.requestRecordPermission() { [unowned self] allowed in
+                    DispatchQueue.main.async {
+                        if allowed {
+                            //self.recordTapped()
+                            self.startRecording()
+                        } else {
+                            print("Failed to record")
+                        }
+                    }
+                }
+            } catch {
+                print("Failed to record")
+            }
+        }
+        
+        
     }
-    
     func startRecording() {
         
         let audioFilename = getDocumentsDirectory().appendingPathComponent("recording.m4a")
@@ -169,6 +175,10 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate, UICol
             audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
             audioRecorder.delegate = self
             audioRecorder.record()
+            
+            AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+
+           
             
            // recordButton.setTitle("Tap to Stop", for: .normal)
         } catch {
@@ -250,7 +260,7 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate, UICol
                 return
             }
             
-            storeRef.downloadURL(completion: { (videURL, error) in
+            storeRef.downloadURL(completion: { (videoURL, error) in
                 if error != nil {
                     print(error ?? "")
                     return
@@ -258,8 +268,12 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate, UICol
                 
                 if let thumbnailImage = self.thumbnailImageForVideoUrl(fileUrl: url) {
                     self.uploadToFireBaseStorageUsingImage(selectedImage: thumbnailImage, completion: { (imageUrl) in
-                        let properties: [String:Any]  = ["imageUrl":imageUrl,"imageWidth": thumbnailImage.size.width,"imageHeight": thumbnailImage.size.height, "videoUrl": videURL?.absoluteString]
-                        self.sendMessageWithProperties(properties: properties)
+                        
+                        if let video = videoURL?.absoluteString {
+                            let properties: [String:Any]  = ["imageUrl":imageUrl,"imageWidth": thumbnailImage.size.width,"imageHeight": thumbnailImage.size.height, "videoUrl": video]
+                            self.sendMessageWithProperties(properties: properties)
+                        }
+                       
                         
                     })
                 }
@@ -288,6 +302,15 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate, UICol
             self.navigationItem.title = self.user?.name
         }
         
+    }
+    
+    private func recordedVoiceDuration(fileUrl : URL) -> String? {
+        let asset = AVAsset(url: fileUrl)
+        let totalSeconds = Int(CMTimeGetSeconds(asset.duration))
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        let mediaTime = String(format:"%02i:%02i",minutes, seconds)
+        return mediaTime
     }
     private func thumbnailImageForVideoUrl(fileUrl : URL) -> UIImage? {
         let asset = AVAsset(url: fileUrl)
@@ -336,13 +359,21 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate, UICol
                 return
             }
             
-            storeRef.downloadURL(completion: { (videURL, error) in
+            storeRef.downloadURL(completion: { (recordURL, error) in
                 if error != nil {
                     print(error ?? "")
                     return
                 }
-                let properties: [String:Any]  = ["imageUrl":"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/12in-Vinyl-LP-Record-Angle.jpg/1200px-12in-Vinyl-LP-Record-Angle.jpg","imageWidth": "300","imageHeight": "300", "videoUrl": videURL?.absoluteString]
-                self.sendMessageWithProperties(properties: properties)
+                
+                if let recordUrl = recordURL?.absoluteString {
+                    if let duration = self.recordedVoiceDuration(fileUrl: url)
+                    {
+                        let properties: [String:Any]  = ["imageUrl":"","imageWidth": 300,"imageHeight": 60,"duration":duration,"recordUrl": recordUrl]
+                        self.sendMessageWithProperties(properties: properties)
+                    }
+                    
+                }
+                
             })
         })
         
@@ -403,12 +434,22 @@ class ChatLogController : UICollectionViewController, UITextFieldDelegate, UICol
         }else if message.imageUrl != nil {
             //fall in here if its an image message
             cell.bubbleWidthAnchor?.constant = 200
-             cell.textView.isHidden = true
+            cell.textView.isHidden = true
         }
         
-        cell.playButton.isHidden = message.videoUrl == nil
-       
         
+        cell.playButton.isHidden = (message.videoUrl == nil) && (message.recordUrl == nil)
+        
+        cell.durationLabel.isHidden = (message.recordUrl == nil)
+        //
+        if message.recordUrl != nil , let duration = message.duration  {
+            cell.durationLabel.text = duration
+            cell.durationLabel.isHidden = false
+        }else
+        {
+            cell.durationLabel.isHidden = true
+        }
+    
         return cell
     }
     

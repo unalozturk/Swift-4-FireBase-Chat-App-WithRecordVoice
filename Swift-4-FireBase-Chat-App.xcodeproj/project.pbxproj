@@ -19,6 +19,7 @@
 		17515136206E1CF5002752F6 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17515135206E1CF5002752F6 /* Message.swift */; };
 		17515139206E2697002752F6 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17515138206E2697002752F6 /* UserCell.swift */; };
 		1751513B206E69E9002752F6 /* ChatMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1751513A206E69E9002752F6 /* ChatMessageCell.swift */; };
+		1762004820BFE55F00D4A5AC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1762004720BFE55F00D4A5AC /* AudioToolbox.framework */; };
 		1775B45E206CC47500BEE9D7 /* user.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1775B45D206CC47500BEE9D7 /* user.swift */; };
 		1775B460206CE0D500BEE9D7 /* LoginController+handler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1775B45F206CE0D500BEE9D7 /* LoginController+handler.swift */; };
 		420FC4D17E12DC1182D6D0EA /* Pods_Swift_4_FireBase_Chat_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FB78E12FC428BC5DD7F6471 /* Pods_Swift_4_FireBase_Chat_App.framework */; };
@@ -40,6 +41,7 @@
 		17515135206E1CF5002752F6 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		17515138206E2697002752F6 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		1751513A206E69E9002752F6 /* ChatMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessageCell.swift; sourceTree = "<group>"; };
+		1762004720BFE55F00D4A5AC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		1775B45D206CC47500BEE9D7 /* user.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = user.swift; sourceTree = "<group>"; };
 		1775B45F206CE0D500BEE9D7 /* LoginController+handler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoginController+handler.swift"; sourceTree = "<group>"; };
 		6F1005E4225C4E9A5ABF1FF9 /* Pods-Swift-4-FireBase-Chat-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Swift-4-FireBase-Chat-App.release.xcconfig"; path = "Pods/Target Support Files/Pods-Swift-4-FireBase-Chat-App/Pods-Swift-4-FireBase-Chat-App.release.xcconfig"; sourceTree = "<group>"; };
@@ -53,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1762004820BFE55F00D4A5AC /* AudioToolbox.framework in Frameworks */,
 				420FC4D17E12DC1182D6D0EA /* Pods_Swift_4_FireBase_Chat_App.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,6 +140,7 @@
 		CFE1DE856B019FE309B6C969 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1762004720BFE55F00D4A5AC /* AudioToolbox.framework */,
 				7FB78E12FC428BC5DD7F6471 /* Pods_Swift_4_FireBase_Chat_App.framework */,
 			);
 			name = Frameworks;

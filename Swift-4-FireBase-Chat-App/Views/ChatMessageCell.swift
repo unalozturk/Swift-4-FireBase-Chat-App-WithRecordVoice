@@ -35,6 +35,33 @@ class ChatMessageCell: UICollectionViewCell {
         button.addTarget(self, action: #selector(handlePlay), for: .touchUpInside)
         return button
     }()
+    lazy var pauseButton : UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage(named:"pause"), for: .normal)
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(handlePause), for: .touchUpInside)
+        button.isHidden = true
+        return button
+    }()
+    
+    lazy var durationLabel: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 13)
+        label.textColor = .white
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true
+        label.text = "0:00 / 0:00"
+        return label
+    }()
+    
+    let playingAudioView : UIView = {
+        var view = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0  ))
+        view.backgroundColor = UIColor(r: 0, g: 0, b: 130)
+        view.translatesAutoresizingMaskIntoConstraints=false
+        view.isHidden = true
+        return view
+    }()
     
     var player: AVPlayer?
     var playerLayer: AVPlayerLayer?
@@ -49,6 +76,26 @@ class ChatMessageCell: UICollectionViewCell {
             activityIndicatorView.startAnimating()
             playButton.isHidden = true
         }
+        if let recordUrlString = message?.recordUrl, let url =  URL(string: recordUrlString)
+        {
+            player = AVPlayer(url: url)
+           /* player?.addPeriodicTimeObserver(forInterval: CMTimeMake(1, 1), queue: .main, using: { (time) in
+                <#code#>
+            })*/
+            playerLayer = AVPlayerLayer(player: player)
+            playerLayer?.frame = bubbleView.bounds
+            bubbleView.layer.addSublayer(playerLayer!)
+            player?.play()
+            playButton.isHidden = true
+            pauseButton.isHidden = false
+            
+        }
+    }
+     @objc func handlePause() {
+        player?.pause()
+        pauseButton.isHidden = true
+        playButton.isHidden = false
+        
     }
     
     override func prepareForReuse() {
@@ -56,6 +103,7 @@ class ChatMessageCell: UICollectionViewCell {
         playerLayer?.removeFromSuperlayer()
         player?.pause()
         activityIndicatorView.stopAnimating()
+        pauseButton.isHidden=true
     }
     
     let textView: UITextView = {
@@ -102,7 +150,7 @@ class ChatMessageCell: UICollectionViewCell {
     
     @objc func handleZoomTap(tapGesture: UITapGestureRecognizer){
         print("handling zoom")
-        if message?.videoUrl != nil {
+        if message?.videoUrl != nil || message?.recordUrl != nil {
             return
         }
         
@@ -158,8 +206,24 @@ class ChatMessageCell: UICollectionViewCell {
        [
             playButton.centerXAnchor.constraint(equalTo: self.bubbleView.centerXAnchor),
             playButton.centerYAnchor.constraint(equalTo: self.bubbleView.centerYAnchor),
-            playButton.heightAnchor.constraint(equalToConstant: 50),
-            playButton.widthAnchor.constraint(equalToConstant: 50)
+            playButton.heightAnchor.constraint(equalToConstant: 40),
+            playButton.widthAnchor.constraint(equalToConstant: 40)
+        ].forEach { $0.isActive=true}
+        
+        bubbleView.addSubview(pauseButton)
+        [
+            pauseButton.centerXAnchor.constraint(equalTo: self.bubbleView.centerXAnchor),
+            pauseButton.centerYAnchor.constraint(equalTo: self.bubbleView.centerYAnchor),
+            pauseButton.heightAnchor.constraint(equalToConstant: 40),
+            pauseButton.widthAnchor.constraint(equalToConstant: 40)
+        ].forEach { $0.isActive=true}
+        
+        bubbleView.addSubview(durationLabel)
+        [
+            durationLabel.leadingAnchor.constraint(equalTo: self.bubbleView.leadingAnchor, constant: 10),
+            durationLabel.topAnchor.constraint(equalTo: self.bubbleView.topAnchor, constant: 0),
+            durationLabel.heightAnchor.constraint(equalToConstant: 20),
+            durationLabel.widthAnchor.constraint(equalToConstant: 100)
         ].forEach { $0.isActive=true}
         
         
@@ -167,8 +231,8 @@ class ChatMessageCell: UICollectionViewCell {
         [
             activityIndicatorView.centerXAnchor.constraint(equalTo: self.bubbleView.centerXAnchor),
             activityIndicatorView.centerYAnchor.constraint(equalTo: self.bubbleView.centerYAnchor),
-            activityIndicatorView.heightAnchor.constraint(equalToConstant: 50),
-            activityIndicatorView.widthAnchor.constraint(equalToConstant: 50)
+            activityIndicatorView.heightAnchor.constraint(equalToConstant: 40),
+            activityIndicatorView.widthAnchor.constraint(equalToConstant: 40)
         ].forEach { $0.isActive=true}
     }
     

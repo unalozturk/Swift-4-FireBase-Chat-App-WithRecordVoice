@@ -19,6 +19,8 @@ class Message: NSObject {
     var imageHeight :NSNumber?
     var imageWidth : NSNumber?
     var videoUrl : String?
+    var recordUrl : String?
+    var duration : String?
 
     func chatPartnerId() -> String? {
         return fromId == Auth.auth().currentUser?.uid ? toId : fromId
@@ -34,6 +36,8 @@ class Message: NSObject {
         imageHeight = dictionary["imageHeight"] as? NSNumber
         imageWidth = dictionary["imageWidth"] as? NSNumber
         videoUrl = dictionary["videoUrl"] as? String
+        recordUrl = dictionary["recordUrl"] as? String
+        duration =  dictionary["duration"] as? String
        
     }
 }
